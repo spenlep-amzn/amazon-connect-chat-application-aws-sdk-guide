@@ -2,7 +2,10 @@
 
 ## Overview
 
-This guide will walk through how to use a personal chat backend and Amazon Connect public APIs to build a chat application, using the AWS SDK.
+This guide will walk through how to use a personal chat backend and Amazon Connect public APIs to build a chat application, using the [v3 JavaScript AWS SDK](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-connectparticipant/).
+
+> 🚨 We recommend using [ChatJS](https://www.npmjs.com/package/amazon-connect-chatjs), a JavaScript library with light wrapper around the AWS-SDK. This has built in logic to handle WebSocket connections and retry logic. Please refer to ["Building a Chat application for Amazon Connect with ChatJS
+"](https://github.com/spenlep-amzn/amazon-connect-chat-application-chatjs-guide)
 
 ![](./chat-application-architecture.png)
 
@@ -29,18 +32,12 @@ This guide will walk through how to use a personal chat backend and Amazon Conne
 
 ### Install SDK Libraries
 
-We recommend using [ChatJS](https://www.npmjs.com/package/amazon-connect-chatjs), a JavaScript library with light wrapper around the AWS-SDK. This has built in logic to handle WebSocket connections and retry logic:
 
-```js
-// ChatJS example
+Install the [v3 JavaScript AWS SDK](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-connectparticipant/) library. This allows full customization, but requires your own logic to handle WebSocket connections. 
 
-import "amazon-connect-chatjs"; 
-
-// imports the global "connect" values
-connect.ChatSession.create({ /* ... */ });
 ```
-
-Alternatively, here is sample code for using the [v3 JavaScript AWS SDK](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-connectparticipant/) directly. This allows full customization, but requires your own logic to handle WebSocket connections. 
+$ npm install @aws-sdk/client-connectparticipant@^3
+```
 
 ```js
 // AWS SDK v3 (JavaScript) example
@@ -149,26 +146,6 @@ exports.handler = (event, context, callback) => {
 Connect to the ongoing chat session using the [CreateParticipantConnection](https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_CreateParticipantConnection.html) public API, and pass in the values of the StartChatContact response. This returns ConnectionToken and WebSocket URL
 
 ```js
-// ChatJS example
-
-import "amazon-connect-chatjs"; 
-
-const chatSession = connect.ChatSession.create({
-  chatDetails: { 
-    contactId: "<REPLACE_ME>",
-    participantId: "<REPLACE_ME>",
-    participantToken: "<REPLACE_ME>",
-  },
-  options: { // optional
-    region: REGION, // optional
-  },
-  type: "CUSTOMER", 
-});
-
-await chatSession.connect();
-```
-
-```js
 // AWS SDK v3 (JavaScript) example
 import { ConnectParticipantClient, CreateParticipantConnectionCommand } from "@aws-sdk/client-connectparticipant";// v3.x.x
 
@@ -205,17 +182,6 @@ Make calls to the [Amazon Connect Participant Service](https://docs.aws.amazon.c
 Send a message using the [SendMessage](https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_SendMessage.html) API
 
 ```js
-// ChatJS example
-
-import "amazon-connect-chatjs";
-
-await chatSession.sendMessage({
-  contentType: "text/plain", // Documentation: https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_SendMessage.html#connectparticipant-SendMessage-request-ContentType
-  message: "Hello World!"
-});
-```
-
-```js
 // AWS SDK v3 (JavaScript) example
 
 import { ConnectParticipantClient, SendMessageCommand } from "@aws-sdk/client-connectparticipant"; //v3.x.x
@@ -240,17 +206,6 @@ const response = await client.send(command);
 Send more chat events using the [SendEvent](https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_SendEvent.html) API
 
 ```js
-// ChatJS example
-
-import "amazon-connect-chatjs";
-
-const awsSdkResponse = await chatSession.sendEvent({
-  contentType: "application/vnd.amazonaws.connect.event.typing" // Documentation: https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_SendEvent.html#connectparticipant-SendEvent-request-ContentType
-});
-const { AbsoluteTime, Id } = awsSdkResponse.data;
-```
-
-```js
 // AWS SDK v3 (JavaScript) example
 
 import { ConnectParticipantClient, SendEventCommand } from "@aws-sdk/client-connectparticipant"; //v3.x.x
@@ -273,18 +228,6 @@ const response = await client.send(command);
 #### Load chat transcript
 
 Fetch the chat transcript using the [GetTranscript](https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_GetTranscript.html) API (uses ConnectionToken)
-
-```js
-// ChatJS example
-
-import "amazon-connect-chatjs";
-
-const awsSdkResponse = await chatSession.getTranscript({
-  maxResults: 100,
-  sortOrder: "ASCENDING"
-});
-const { InitialContactId, NextToken, Transcript } = awsSdkResponse.data;
-```
 
 ```js
 // AWS SDK v3 (JavaScript) example
@@ -348,14 +291,6 @@ const response = await client.send(command);
 ### End a chat
 
 End the ongoing chat session with the [DisconnectParticipant](https://docs.aws.amazon.com/connect-participant/latest/APIReference/API_DisconnectParticipant.html) API
-
-```js
-// ChatJS example
-
-import "amazon-connect-chatjs";
-
-await chatSession.disconnectParticipant();
-```
 
 ```js
 // AWS SDK v3 (JavaScript) example
