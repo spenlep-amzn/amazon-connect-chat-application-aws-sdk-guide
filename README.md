@@ -286,7 +286,7 @@ const awsSdkResponse = await chatSession.getTranscript({
 const { InitialContactId, NextToken, Transcript } = awsSdkResponse.data;
 ```
 
-```
+```js
 // AWS SDK v3 (JavaScript) example
 
 import { ConnectParticipantClient, GetTranscriptCommand } from "@aws-sdk/client-connectparticipant"; // ES Modules import
