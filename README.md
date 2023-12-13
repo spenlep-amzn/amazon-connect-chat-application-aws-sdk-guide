@@ -372,3 +372,5 @@ const response = await client.send(command);
 // {};
 ```
 
+![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fspenlep-amzn%2Famazon-connect-chat-application-aws-sdk-guide&label=VIEWS&countColor=%23263759)
+
